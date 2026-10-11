@@ -54,7 +54,8 @@ class CalendarForecastTests(unittest.TestCase):
 
     def test_invalid_inputs_return_errors(self):
         valid = self.history([.10, .095, .09])
-        cases = [None, {}, [None] * 3, list(reversed(valid)),
+        # Newest-first order is sorted, not rejected: see test_creative_fatigue_inputs.py.
+        cases = [None, {}, [None] * 3,
                  [valid[0], valid[0], valid[2]],
                  [dict(row, date=None) for row in valid],
                  [dict(row, date='bad') for row in valid],
