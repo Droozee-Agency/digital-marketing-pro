@@ -40,7 +40,7 @@ Open-source AI marketing plugin — **164 skills, 24 specialist agents, EU AI Ac
 | 🏢 **Marketing agency** managing 50–200 brands | `/digital-marketing-pro:engagement` per brand, then `/digital-marketing-pro:cowork-setup` for team Drive persistence | Same 12-Part Strategy Flow audited across every brand. New-hire onboarding goes from 6 weeks to 6 hours. Per-brand AI cost rollup via `:agency-dashboard`. |
 | 👔 **In-house marketing team** (B2B SaaS · e-commerce · fintech · healthtech) | `/digital-marketing-pro:engagement` once to anchor strategy, then `:content-engine` + `:campaign-plan` for ongoing work | A single canonical strategy doc, monthly stakeholder reports via `:performance-report`, content + campaigns that tie back to the strategy instead of drifting. |
 | 🚀 **Marketing automation builder** (n8n · Zapier · Make · Pipedream · custom) | `/digital-marketing-pro:doctor` to see what's wired, `:execute-action` to fire real API calls | 8 verified HTTP connectors executing end-to-end (Slack · HubSpot · Klaviyo · SendGrid · Brevo · Customer.io · Mailchimp · Ahrefs); 28 OAuth connectors via MCP manifest. Stdlib only, no third-party deps. |
-| 💼 **Solo consultant** or freelance marketer | `/digital-marketing-pro:engagement` per client | 50–60 canonical files per client engagement in ~60 minutes for $15–40 of API spend. Same depth on every project. Installs on Codex / Cursor / Copilot CLI / Antigravity if you don't live in Claude. |
+| 💼 **Solo consultant** or freelance marketer | `/digital-marketing-pro:engagement` per client | 50–60 canonical files per client engagement in ~60 minutes. Same depth on every project. Installs on Codex / Cursor / Copilot CLI / Antigravity if you don't live in Claude. |
 | 📈 **Growth team** / product marketer | `:funnel-architect` → `:analytics-insights` → `:attribution-model` → `:churn-risk` → `:cohort-analysis` | Journey design + measurement + retention + churn — all aligned to the strategy document, not isolated outputs. MMM + incrementality testing baked in. |
 | 🛡 **Compliance-led marketer** (EU · UK · India · Brazil · California) | `/digital-marketing-pro:check` before publishing anything | C2PA content provenance, EU AI Act Article 50 disclosure, GDPR + CCPA + DPDPA + LGPD across 16 jurisdictions, deepfake disclosure clauses on every AI creative brief. |
 
@@ -70,7 +70,7 @@ Open-source AI marketing plugin — **164 skills, 24 specialist agents, EU AI Ac
 
 **Are you a marketer, agency owner, or content lead who doesn't live in a terminal?** Here's the fastest path:
 
-1. **Open [Anthropic Cowork](https://claude.com/cowork)** in your browser (no installation, no terminal, no command line). Sign up free if you don't have an account.
+1. **Open [Anthropic Cowork](https://claude.com/cowork)** in your browser (no installation, no terminal, no command line). Sign in with your Claude account (Cowork usage counts against your plan).
 2. **Click your profile menu → Settings → Plugins → Add Marketplace.** Paste: `indranilbanerjee/neels-plugins`
 3. **Find "Digital Marketing Pro" in the list → click Install.**
 4. **Type in chat:** *"Let's set up a brand for ACME Corp"* — Claude will walk you through brand setup (voice, audience, jurisdiction, competitors).
@@ -131,7 +131,7 @@ Run `/digital-marketing-pro:engagement` and the plugin produces a full brand-str
 - **Part 11** — AI creative briefs (with Nano Banana Pro / Veo 3.1 / Gemini Omni model guidance and C2PA + deepfake-disclosure clauses)
 - **Part 12** — Continuous improvement loop
 
-Cost: roughly **$15–40 in Claude API spend** for a full 12-part engagement using Opus 4.8 or Opus 5 (same $5/$25 per-MTok pricing). The plugin itself is MIT-licensed and free.
+Cost: the plugin is MIT-licensed and free. A full 12-part engagement writes about 50–60 documents, so it uses a lot of model tokens: on a subscription that counts against your plan's usage limits, and only pay-as-you-go API-key users are billed per token ([What it costs](#what-it-costs)).
 
 ---
 
@@ -220,7 +220,7 @@ See the [Multi-Brand & Agency Guide](docs/multi-brand-guide.md) for the multi-cl
 /digital-marketing-pro:engagement                     # full 12-Part Strategy Flow (~60 min on Opus-class)
 /digital-marketing-pro:check  engagements/<id>/part-03-four-core-documents/v1/*.md   # pre-publish gate before client review
 ```
-Output: ~50–60 canonical files. Cost: $15–40 in API spend. Time saved: ~3 weeks of senior-strategist labor.
+Output: ~50–60 canonical files. Time saved: ~3 weeks of senior-strategist labor.
 
 ### 📊 Quarterly business review (in-house, last week of quarter)
 ```
@@ -281,6 +281,12 @@ Output: HTTP calls for the 8 executable connectors (Slack, HubSpot, Klaviyo, Sen
 - **Ask for an API key in the chat.** Connectors read keys from environment variables.
 - **Connect a service you did not set up.** No MCP server ships enabled and no hooks run.
 - **Remove or hide AI watermarks.** AI involvement is disclosed, with C2PA provenance where the format supports it.
+
+### What it costs
+
+- **The plugin is free** (MIT-licensed).
+- **Model usage (tokens).** On a subscription (Claude Pro, Max, Team or Enterprise in Claude Code or Cowork; a ChatGPT plan in Codex; a Cursor or Copilot plan; the same goes for other hosts' plans) the tokens count against your plan's usage limits instead of being billed per token; check your plan for any optional extra-usage billing. Only pay-as-you-go API-key users pay per token. Context (the skill listing, a skill's instructions, the documents it reads) uses context window and usage allowance for everyone, and money only for API users. A full engagement is a heavy user; `/usage` in Claude Code shows per-model consumption.
+- **Services you connect with your own keys** (ad, email and CRM platforms, SEO and data APIs such as Ahrefs or DataForSEO) are billed by those providers whatever plan you are on, and the money an action moves (an ad budget, a send) is spent on their side. Live writes wait for your typed `yes` first.
 
 ## Supported surfaces (v3.35.2)
 
@@ -694,8 +700,8 @@ Those are frameworks. DM Pro is a **packaged, opinionated methodology** with exp
 | Document creation (Excel, PPT) | no | yes | no | no |
 | Recommended for | Terminal workflows + scripting | Visual desktop workflows | Quick content | One-off questions |
 
-**Q: How much does a full engagement cost in API spend?**
-Roughly **$15–40** for a complete 12-part engagement using Opus 4.8 or Opus 5 (same pricing) across ~50–60 documents. Track per-brand consumption via Claude Code v2.1.149+ `/usage` (now integrated into `/digital-marketing-pro:agency-dashboard`).
+**Q: How much does a full engagement cost?**
+The plugin is free (MIT-licensed). A complete 12-part engagement writes ~50–60 documents, so it uses a lot of model tokens: on a subscription that counts against your plan's usage limits, and only pay-as-you-go API-key users are billed per token ([What it costs](#what-it-costs)). Track per-brand consumption via Claude Code v2.1.149+ `/usage` (now integrated into `/digital-marketing-pro:agency-dashboard`).
 
 **Q: Can I run multiple brands in parallel?**
 Yes. Each brand has its own `~/.claude-marketing/brands/<brand-slug>/` directory and Python script state. Switch with `/digital-marketing-pro:switch-brand`.

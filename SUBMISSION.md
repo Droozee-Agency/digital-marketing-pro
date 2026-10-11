@@ -47,7 +47,7 @@ Built for digital marketing agencies managing 50–200 brands, in-house marketin
 
 Walks the brand through Stone-vs-Opinion intake (Part 1) → unbiased external research (Part 2) → Four Core Documents covering Business & SBU Analysis, Segmentation, Brand Positioning, DMFlow (Part 3, 61 steps) → competitive/customer/market analysis (Part 4) → Client Validation Document (Part 5) → selective v2 re-runs per the Decision Matrix (Part 6) → preparation documents (Part 7) → Growth Plan + 12-month Yearly Planner (Part 8) → channel strategy fan-out across 7 families and up to 17 channels (Part 9, parallel-dispatched) → execution artefacts (Part 10) → AI creative instructions (Part 11) → continuous improvement loop (Part 12). Outputs ~50–60 canonical files in `~/.claude-marketing/brands/<brand>/engagements/<engagement-id>/`.
 
-**Expected duration:** 2–5 hours of conversation across a full engagement; ~$30–80 in Claude API costs using Opus 4.8.
+**Expected duration:** 2–5 hours of conversation across a full engagement.
 
 ### Use case 2 — Pre-publish quality gate for EU-targeted AI content
 
