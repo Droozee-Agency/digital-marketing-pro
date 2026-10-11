@@ -234,6 +234,13 @@ class TestOneApprovalFiresOnce(NoProxy):
         rec = self.record(aid)
         self.assertEqual((rec["status"], rec["execution_result"]), ("executed", "success"))
         self.assertTrue(rec.get("consumed_at") and rec.get("resolved_from_unknown_at"))
+        # Both stamps are UTC-aware ISO times, so they compare and sort together (3.35.6).
+        from datetime import datetime
+        for key in ("consumed_at", "resolved_from_unknown_at"):
+            self.assertIsNotNone(datetime.fromisoformat(rec[key]).tzinfo, key)
+        repeat = self.am.mark_executed("acme", aid, {"execution_result": "failure"})
+        self.assertEqual(repeat["status"], "executed", "a second mark-executed changes nothing")
+        self.assertEqual(repeat["note"], "this execution is already recorded; the record stays used")
         again = self.fire(aid)
         self.assertFalse(again["execute_attempted"], "closing out an unknown never re-arms the record")
         self.assertEqual(len(stub.bodies), 1)

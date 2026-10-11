@@ -147,6 +147,8 @@ Scripts must follow these conventions:
 3. **Graceful fallbacks**: If optional dependencies are missing, output a fallback JSON with `"fallback": true` and `sys.exit(0)` — never crash with `sys.exit(1)` on missing optional deps. The message prints `_common.install_command([...])`, the exact pinned command; a script never runs pip itself. A new optional package gets an exact pin in `_common.PINNED_DEPENDENCIES` and the same pin in `scripts/requirements.txt` (`tests/test_pinned_dependencies.py` keeps them equal)
 4. **Brand-aware**: Accept `--brand SLUG` to load brand-specific data from `~/.claude-marketing/brands/{slug}/`
 5. **No hardcoded paths**: Use `_common.workspace_root()` and `_common.brand_dir(slug)` for the data directory (they honour `CLAUDE_MARKETING_HOME` and the host's plugin data folder)
+6. **Text encodings**: read every text file with `encoding="utf-8-sig"` (it reads plain UTF-8 unchanged and also accepts the BOM that Excel and PowerShell write) and write every text file with `encoding="utf-8"`, never `utf-8-sig`. `tests/test_text_encodings.py` checks every call.
+7. **Printed hints**: when a script tells the reader to run another script, build the command with `_common.script_command("x.py", "--args")` (the running interpreter and the script's absolute path), not `python scripts/x.py`, which works only from the plugin's folder.
 
 Example graceful fallback:
 

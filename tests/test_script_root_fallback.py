@@ -32,6 +32,8 @@ OLD_FALLBACK = FALLBACK.split(" Run them with")[0]
 RUNS_SCRIPT = re.compile(r"\bpython3?\s+\"?(?:\$\{CLAUDE_PLUGIN_ROOT\}/)?scripts/[\w./-]+\.py")
 # A bare relative path only works when the shell happens to sit in the plugin root.
 RELATIVE_RUN = re.compile(r"\bpython3?\s+\"?scripts/[\w./-]+\.py")
+# An unquoted path breaks on a plugin folder with a space in it (C:\Users\Jane Doe\...).
+UNQUOTED_PATH = re.compile(r'(?<!")\$\{CLAUDE_PLUGIN_ROOT\}/scripts/')
 
 
 def runs_a_script(text: str) -> bool:
@@ -49,10 +51,11 @@ def checked_files():
 
     2026-10-12: the 24 agents ran scripts (execution-coordinator runs approval-manager.py)
     with no line at all, because the guard only looked at skills and commands; and 29
-    reference files ran benchmark_book.py by a bare `scripts/` path.
+    reference files ran benchmark_book.py by a bare `scripts/` path. Recursive (3.35.6), so a
+    supporting file in a deeper folder of a skill cannot sit outside the rules.
     """
-    return sorted(list((ROOT / "skills").glob("*/*.md")) + list((ROOT / "commands").glob("*.md"))
-                  + list((ROOT / "agents").glob("*.md")))
+    return sorted(list((ROOT / "skills").rglob("*.md")) + list((ROOT / "commands").rglob("*.md"))
+                  + list((ROOT / "agents").rglob("*.md")))
 
 
 class TestScriptRootFallback(unittest.TestCase):
@@ -61,6 +64,18 @@ class TestScriptRootFallback(unittest.TestCase):
                if missing_fallback(p.read_text(encoding="utf-8", errors="replace"))]
         self.assertEqual(bad, [], "files that run a script without the script-location line "
                                   "(see this module's docstring):\n  " + "\n  ".join(bad))
+
+    def test_every_plugin_root_script_path_is_quoted(self):
+        bad = ["%s:%d" % (p.relative_to(ROOT), i) for p in checked_files()
+               for i, line in enumerate(p.read_text(encoding="utf-8", errors="replace").splitlines(), 1)
+               if UNQUOTED_PATH.search(line)]
+        self.assertEqual(bad, [], 'write "${CLAUDE_PLUGIN_ROOT}/scripts/..." in double quotes:\n  ' + "\n  ".join(bad))
+
+    def test_plant_unquoted_paths_are_flagged(self):
+        self.assertTrue(UNQUOTED_PATH.search("python ${CLAUDE_PLUGIN_ROOT}/scripts/dm-status.py --json"))
+        self.assertTrue(UNQUOTED_PATH.search("- `${CLAUDE_PLUGIN_ROOT}/scripts/performance-monitor.py` — data"))
+        self.assertIsNone(UNQUOTED_PATH.search('python "${CLAUDE_PLUGIN_ROOT}/scripts/dm-status.py" --json'))
+        self.assertIsNone(UNQUOTED_PATH.search(FALLBACK), "the script-location line names the variable, not a path")
 
     def test_no_file_runs_a_script_by_a_relative_path(self):
         bad = ["%s: %s" % (p.relative_to(ROOT), m.group(0)) for p in checked_files()
