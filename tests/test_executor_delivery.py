@@ -212,10 +212,31 @@ class TestOneApprovalFiresOnce(NoProxy):
                 self.assertEqual(ce.exit_code_for(first, True), 1, "an unknown outcome is not success")
                 rec = self.record(aid)
                 self.assertEqual(rec["execution_result"], "unknown")
+                # 3.35.5: the status says unknown, not failed, so nobody re-prepares it by hand.
+                self.assertEqual(rec["status"], "unknown")
+                self.assertTrue(rec.get("consumed_at"))
                 second = self.fire(aid)
                 self.assertFalse(second["execute_attempted"], "the same approval must not fire again")
                 self.assertIn("already used", second["execute_blocked_reason"])
                 self.assertEqual(len(stub.bodies), 1, "the platform saw exactly one request")
+
+    def test_an_unknown_outcome_is_reported_and_can_be_closed_out_after_checking(self):
+        stub = StubPlatform("stall_before_status")
+        self.addCleanup(stub.close)
+        self.point_at(stub.port)
+        aid = self.approved_id()
+        self.fire(aid)
+        log = self.am.get_execution_log("acme")
+        self.assertEqual((log["unknown_count"], log["failed_count"], log["success_count"]), (1, 0, 0))
+        # The user checks the platform, finds the message was posted, and records it.
+        closed = self.am.mark_executed("acme", aid, {"execution_result": "success"})
+        self.assertEqual(closed["status"], "executed", closed)
+        rec = self.record(aid)
+        self.assertEqual((rec["status"], rec["execution_result"]), ("executed", "success"))
+        self.assertTrue(rec.get("consumed_at") and rec.get("resolved_from_unknown_at"))
+        again = self.fire(aid)
+        self.assertFalse(again["execute_attempted"], "closing out an unknown never re-arms the record")
+        self.assertEqual(len(stub.bodies), 1)
 
     def test_a_refused_connection_releases_the_record(self):
         self.point_at(refused_port())

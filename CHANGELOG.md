@@ -6,6 +6,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). This pr
 
 ---
 
+## [3.35.5] - 2026-10-12
+
+### Agents say where the scripts are, and an unknown outcome is recorded as unknown
+
+Both found by the fresh-install smoke test's re-run against 3.35.4. Each fix has a test that fails on the 3.35.4 code.
+
+**Fixed — agents and reference files that run scripts**
+
+- All 24 agents run the plugin's scripts (execution-coordinator runs `approval-manager.py`, for example) but carried no script-location line, so on a host that does not set `${CLAUDE_PLUGIN_ROOT}` they had neither the fallback nor the note on which Python to use. Each agent now has the line under its title. So do the 27 reference files whose benchmark-provenance banner runs `benchmark_book.py`.
+- Those banners, one media-planning note and the help skill ran scripts by a bare `scripts/` path (`python scripts/benchmark_book.py …`, `python scripts/setup.py …`), which works only when the shell happens to sit in the plugin's folder. They now use `python "${CLAUDE_PLUGIN_ROOT}/scripts/…"`.
+- `tests/test_script_root_fallback.py` now discovers every skill, command, agent and reference file that runs a script (a `python … scripts/….py` command line, by either path) and requires the line in each, and no file may run a script by a bare relative path. Reverting one agent and one banner file to 3.35.4 fails it.
+
+**Fixed — an unknown outcome was saved as "failed"**
+
+- 3.35.4 consumed the approval record after a timeout that may have followed delivery, but saved its status as `failed` (with `execution_result: "unknown"`). A person reading `status: failed` could reasonably prepare the same write again and send it twice. The status is now `unknown` (still used up), and a record in that state is refused as already used.
+- `approval-manager.py --action get-execution-log` lists unknown outcomes and counts them (`unknown_count`) apart from successes and failures. Once you have checked the platform, `--action mark-executed` with `success` or `failure` records what happened; the record stays used and notes `resolved_from_unknown_at`.
+- The approval framework's escalation table said to retry a platform error once after 60 seconds. It now retries only when the request provably never reached the platform, and a new "Unknown outcome" row says never to retry: check the platform, record the result, and prepare a new write only if it did not happen. `commands/execute-action.md` and PRIVACY.md describe the `unknown` status.
+
+**Tests**
+
+- `tests/test_script_root_fallback.py` (discovery rule, relative-path rule, a plant test for a bare relative run); `tests/test_executor_delivery.py` checks the `unknown` status and a new close-out test (the execution log counts the unknown, `mark-executed` resolves it, the record never re-arms). The 3.35.4 code fails with `'failed' != 'unknown'` and no `unknown_count`.
+- Suite: 668 tests.
+
 ## [3.35.4] - 2026-10-12
 
 ### One approval can no longer fire twice, `$?` says whether anything was sent, and skills name the Python to use
