@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from _helpers import import_script  # type: ignore[import-not-found]
 
@@ -16,24 +17,21 @@ class DriveSyncStateBase(unittest.TestCase):
     def setUp(self):
         self.tmpdir = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmpdir.cleanup)
-        self._old_home = os.environ.get("HOME")
-        self._old_userprofile = os.environ.get("USERPROFILE")
-        os.environ["HOME"] = self.tmpdir.name
-        os.environ["USERPROFILE"] = self.tmpdir.name
+        # The workspace resolver reads CLAUDE_MARKETING_HOME and CLAUDE_PLUGIN_DATA before
+        # HOME, so a value set by whoever runs the suite pointed these tests at a shared
+        # folder and they failed. Pin every input; patch.dict restores the environment.
+        env = mock.patch.dict(os.environ, {
+            "HOME": self.tmpdir.name,
+            "USERPROFILE": self.tmpdir.name,
+            "CLAUDE_MARKETING_HOME": str(Path(self.tmpdir.name) / ".claude-marketing"),
+        })
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop("CLAUDE_PLUGIN_DATA", None)
         # Re-import after env change so Path.home() picks up the temp dir.
         mod_name = "drive_sync_state"
         sys.modules.pop(mod_name, None)
         self.dss = import_script("drive-sync-state.py", module_name=mod_name)
-
-    def tearDown(self):
-        if self._old_home is not None:
-            os.environ["HOME"] = self._old_home
-        else:
-            os.environ.pop("HOME", None)
-        if self._old_userprofile is not None:
-            os.environ["USERPROFILE"] = self._old_userprofile
-        else:
-            os.environ.pop("USERPROFILE", None)
 
 
 class TestCoworkConfig(DriveSyncStateBase):
