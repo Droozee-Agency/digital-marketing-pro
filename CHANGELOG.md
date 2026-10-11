@@ -24,10 +24,15 @@ Both found by the fresh-install smoke test's re-run against 3.35.4. Each fix has
 - `approval-manager.py --action get-execution-log` lists unknown outcomes and counts them (`unknown_count`) apart from successes and failures. Once you have checked the platform, `--action mark-executed` with `success` or `failure` records what happened; the record stays used and notes `resolved_from_unknown_at`.
 - The approval framework's escalation table said to retry a platform error once after 60 seconds. It now retries only when the request provably never reached the platform, and a new "Unknown outcome" row says never to retry: check the platform, record the result, and prepare a new write only if it did not happen. `commands/execute-action.md` and PRIVACY.md describe the `unknown` status.
 
+**Fixed — MCP write skills retried after outcomes that can be unknown**
+
+- MCP write skills retry only a request that provably never arrived; after a timeout they check the platform first. Writes through MCP server tools are outside the approval-record check, so the skill text is their only guard, and eight places told the agent to retry blindly: crm-sync ("retry transient failures up to 3 times"), data-import ("retry logic for transient API failures (rate limits, timeouts)", where a timeout is exactly the case that may already have been applied), lead-import, data-export (a BigQuery streaming insert retried after a timeout duplicates rows), send-report ("Retry on failure"), schedule-social ("retry or escalate"), client-report ("retry guidance") and the reporting guide's "Retry delivery 2x". The rule is worded once in `skills/context-engine/approval-framework.md`, after the escalation table: retry only a write that provably never reached the platform (connection refused, DNS failure, or a 429 rate-limit rejection); after a timeout or a lost reply, look the record up on the platform first (by email, external ID or message ID) and resend only what is missing. Every retry line in those files now carries it in short form. Read retries (the reporting guide's data pull) are unchanged.
+
 **Tests**
 
 - `tests/test_script_root_fallback.py` (discovery rule, relative-path rule, a plant test for a bare relative run); `tests/test_executor_delivery.py` checks the `unknown` status and a new close-out test (the execution log counts the unknown, `mark-executed` resolves it, the record never re-arms). The 3.35.4 code fails with `'failed' != 'unknown'` and no `unknown_count`.
-- Suite: 668 tests.
+- New `tests/test_write_retry_rule.py` (4): the rule is worded once in the approval framework, every line of the eight write files that mentions a retry carries it (or "never auto-retry"), the read retry is left alone, and crm-sync's old line is flagged. Reverting crm-sync to the first 3.35.5 commit fails it.
+- Suite: 672 tests.
 
 ## [3.35.4] - 2026-10-12
 

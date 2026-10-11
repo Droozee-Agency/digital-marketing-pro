@@ -508,7 +508,7 @@
         "brand-setup"
       ],
       "doc_files": 1,
-      "bytes": 9155
+      "bytes": 9404
     },
     {
       "name": "client-validation-document",
@@ -774,7 +774,7 @@
         "validate-profile"
       ],
       "doc_files": 56,
-      "bytes": 883596
+      "bytes": 884461
     },
     {
       "name": "continuous-improvement-loop",
@@ -909,7 +909,7 @@
         "lead-import"
       ],
       "doc_files": 1,
-      "bytes": 13029
+      "bytes": 13355
     },
     {
       "name": "cro",
@@ -956,7 +956,7 @@
         "segment-audience"
       ],
       "doc_files": 1,
-      "bytes": 15169
+      "bytes": 15583
     },
     {
       "name": "data-import",
@@ -971,7 +971,7 @@
         "brand-setup"
       ],
       "doc_files": 1,
-      "bytes": 9641
+      "bytes": 10000
     },
     {
       "name": "digital-pr",
@@ -1630,7 +1630,7 @@
         "crm-sync"
       ],
       "doc_files": 1,
-      "bytes": 13566
+      "bytes": 13919
     },
     {
       "name": "lead-magnet-ideas",
@@ -2225,7 +2225,7 @@
         "brand-setup"
       ],
       "doc_files": 1,
-      "bytes": 13753
+      "bytes": 14057
     },
     {
       "name": "search-knowledge",
@@ -2305,7 +2305,7 @@
         "brand-setup"
       ],
       "doc_files": 1,
-      "bytes": 13721
+      "bytes": 14008
     },
     {
       "name": "send-sms",

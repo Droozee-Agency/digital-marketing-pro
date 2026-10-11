@@ -9,7 +9,7 @@ Open-source AI marketing plugin — **164 skills, 24 specialist agents, EU AI Ac
 [![Version](https://img.shields.io/badge/version-3.35.5-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/digital-marketing-pro?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/digital-marketing-pro/stargazers)
-[![Tests](https://img.shields.io/badge/tests-668%2F668%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-672%2F672%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#works-on-40-agent-harnesses-via-the-agent-skills-open-standard)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](skills/context-engine/compliance-rules.md)
 
@@ -195,7 +195,7 @@ Other marketing plugins exist, including Anthropic's own marketing plugin and co
 | AEO / GEO | **A 6-platform audit, including Google AI Mode** |
 | Where it runs | **9 native hosts**: Claude Code, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes, OpenClaw, Grok |
 | Live-write safety | **Single-use approval record for writes it sends itself; MCP writes: typed yes + host prompt** |
-| Tests | **668 stdlib unittest** tests |
+| Tests | **672 stdlib unittest** tests |
 | License | **MIT: no telemetry, no seats** |
 
 ---
@@ -406,7 +406,7 @@ If you run into a platform-specific install snag, file a [GitHub issue](https://
 
 ### v3.35.5 — agents say where the scripts are; unknown means unknown (October 12, 2026)
 
-Found by the fresh-install smoke test's re-run. The 24 agents run scripts but had no script-location line, so on hosts without `${CLAUDE_PLUGIN_ROOT}` they had no fallback and no Python note; they have it now, as do 27 reference files, and the banners that ran `benchmark_book.py` by a bare `scripts/` path use the plugin-root path. A test now finds every file that runs a script. An approval whose send timed out after the request may have arrived is saved with status `unknown` instead of `failed`, so nobody re-prepares it by hand; the execution log counts unknowns, `mark-executed` closes one out after you check the platform, and the approval framework no longer says to retry an error that may have been delivered. 668 tests.
+Found by the fresh-install smoke test's re-run. The 24 agents run scripts but had no script-location line, so on hosts without `${CLAUDE_PLUGIN_ROOT}` they had no fallback and no Python note; they have it now, as do 27 reference files, and the banners that ran `benchmark_book.py` by a bare `scripts/` path use the plugin-root path. A test now finds every file that runs a script. An approval whose send timed out after the request may have arrived is saved with status `unknown` instead of `failed`, so nobody re-prepares it by hand; the execution log counts unknowns, `mark-executed` closes one out after you check the platform, and the approval framework no longer says to retry an error that may have been delivered. Write skills that go through MCP tools retry only a request that provably never arrived; after a timeout they check the platform first. 672 tests.
 
 ### v3.35.4 — one approval fires once; `$?` says whether anything was sent (October 12, 2026)
 
@@ -788,7 +788,7 @@ Use the direct repo form: `grok plugin install indranilbanerjee/digital-marketin
 ### General (any platform)
 
 **"Tests in `tests/` fail when I `git clone` locally"**
-Run `python tests/run_all.py` from the repo root. All 668 tests are stdlib-only — no `pip install` needed. If they fail, the most likely cause is a Python version mismatch (DMP supports Python 3.10+) or a clone that omitted some `skills/` subdirectories. Try `git clone --depth=1` again.
+Run `python tests/run_all.py` from the repo root. All 672 tests are stdlib-only — no `pip install` needed. If they fail, the most likely cause is a Python version mismatch (DMP supports Python 3.10+) or a clone that omitted some `skills/` subdirectories. Try `git clone --depth=1` again.
 
 **"`/digital-marketing-pro:doctor` shows my action as stub_unconfigured"**
 That action needs an MCP connector configured. Run `python scripts/connector-status.py --action setup-guide --name <connector-name>` for the exact setup snippet. Add it to your `.mcp.json` under `mcpServers`, restart your agent, and the action becomes `manifest_ready`. See [Connector-aware action resolver](#connector-aware-action-resolver) for the full readiness model.
