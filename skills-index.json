@@ -838,7 +838,7 @@
         "brand-setup"
       ],
       "doc_files": 1,
-      "bytes": 9561
+      "bytes": 9707
     },
     {
       "name": "creative-testing-framework",
@@ -2083,7 +2083,7 @@
         "serp-tracker"
       ],
       "doc_files": 2,
-      "bytes": 15164
+      "bytes": 15456
     },
     {
       "name": "recall",
@@ -2419,7 +2419,7 @@
         "rank-monitor"
       ],
       "doc_files": 1,
-      "bytes": 1659
+      "bytes": 1757
     },
     {
       "name": "share-of-voice",

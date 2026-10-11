@@ -1,5 +1,7 @@
 # SERP snapshot format (`rank-monitor --features`)
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`.
+
 Search Console reports positions for a verified property, not the SERP-feature layout of each query. Any SERP API or rank tracker can export that layout. Save one export per check as a CSV file or a JSON array, then validate it:
 
 ```

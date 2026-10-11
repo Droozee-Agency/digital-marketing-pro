@@ -6,17 +6,17 @@ Run `/digital-marketing-pro:engagement` against each brand. Same 12-Part Strateg
 
 Open-source AI marketing plugin — **164 skills, 24 specialist agents, EU AI Act Article 50 ready, Cowork team-persistent**. Built for marketing agencies, in-house teams running 50–200 brands, and consultancies. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.35.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.35.3-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/digital-marketing-pro?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/digital-marketing-pro/stargazers)
-[![Tests](https://img.shields.io/badge/tests-613%2F613%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-642%2F642%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#works-on-40-agent-harnesses-via-the-agent-skills-open-standard)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](skills/context-engine/compliance-rules.md)
 [![HOL Guard](https://img.shields.io/endpoint?url=https%3A%2F%2Fhol.org%2Fapi%2Fregistry%2Fbadges%2Fplugin%3Fslug%3Dindranil-banerjee%252Fdigital-marketing-pro%26metric%3Dtrust)](https://hol.org/go/guard/indranilbanerjee21?dest=%2Fguard%2Fbilling%3Fpromo%3DGUARD20-INDRANILBANERJEE21%23upgrade&link_id=fc4b1025-e6eb-40bd-b3d7-24a8508c2fd9&utm_source=insights_share&utm_medium=affiliate_cta&utm_campaign=share20)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v3.35.2 (October 10, 2026):** every missing package prints its exact pinned install command; live writes need a matching approval record; every skill description fits the listing budget. [What's new](#whats-new) · [Changelog](CHANGELOG.md)
+> 🆕 **Just shipped — v3.35.3 (October 11, 2026):** fatigue forecasts count calendar days (a contributor's fix, now taking CTR-only and newest-first histories); rank-monitor reads a SERP snapshot exported from any provider. [What's new](#whats-new) · [Changelog](CHANGELOG.md)
 
 ```bash
 # Install — one line
@@ -196,7 +196,7 @@ Other marketing plugins exist, including Anthropic's own marketing plugin and co
 | AEO / GEO | **A 6-platform audit, including Google AI Mode** |
 | Where it runs | **9 native hosts**: Claude Code, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes, OpenClaw, Grok |
 | Live-write safety | **Single-use approval record for writes it sends itself; MCP writes: typed yes + host prompt** |
-| Tests | **613 stdlib unittest** tests |
+| Tests | **642 stdlib unittest** tests |
 | License | **MIT: no telemetry, no seats** |
 
 ---
@@ -293,7 +293,7 @@ Output: HTTP calls for the 8 executable connectors (Slack, HubSpot, Klaviyo, Sen
 
 ---
 
-## Supported surfaces (v3.35.2)
+## Supported surfaces (v3.35.3)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -405,6 +405,10 @@ If you run into a platform-specific install snag, file a [GitHub issue](https://
 
 ## What's new
 
+### v3.35.3 — fatigue forecasts count calendar days; SERP snapshots from any provider (October 11, 2026)
+
+`creative-fatigue-predictor.py` read row numbers as days, so a daily CTR series that had already crossed its fatigue threshold was called "performing steadily" and a weekly series with 28 days of runway was called "URGENT" at 3. Forecasts now use calendar days from the latest row and report a crossed threshold as 0 days; the fix was contributed by @andromia3 (PR #17). The follow-up accepts what real exports look like: no CPM (a CTR-only forecast, with `signals_used`), newest-first rows, ISO timestamps and numeric strings, with every error naming its row. `rank-monitor --features` can now read a SERP snapshot (position, AI Overview presence and citation, People Also Ask, featured-snippet owner) exported from any SERP API or rank tracker, validated by the new stdlib `scripts/serp-snapshot.py`, which reads only that file. 642 tests.
+
 ### v3.35.2 — every missing-package message prints the exact pinned command (October 10, 2026)
 
 The never-do panel said a missing package prints the exact pinned install command; only C2PA did. Now `_common.PINNED_DEPENDENCIES` pins every optional package (each the newest release at least two weeks old that supports Python 3.10), `scripts/requirements.txt` lists the same exact pins, `setup.py --install` installs from the table, and every missing-package message prints the tested command, including two that said nothing useful before (the AI-visibility checker blamed the API key when its SDK was missing; the UTM QR note gave no command). Proved in fresh Python 3.10 and 3.13 environments. Also fixed, from a claim check of this README against the code: the automation examples (diagnostic returns an MCP manifest; audit-current is an SEO audit; approve needs `--brand`), the OAuth connector count (28, not 25), the output-folder tree (`brands/<slug>/profile.json`, `part-01-…` folders), the check row and the live-write comparison. New guards: `tests/test_pinned_dependencies.py`, connector-count and brand-path checks in `tests/test_doc_counts.py`, and `tests/test_manifest_paths.py`. 613 tests.
@@ -413,15 +417,13 @@ The never-do panel said a missing package prints the exact pinned install comman
 
 `embed-c2pa.py --prompt` failed to sign on c2pa-python 0.38.0, the version v3.35.0 pins, because the prompt was written as a second `c2pa.opened` action; it now rides on the created action. New `tests/test_c2pa_embed.py` (10 tests) pins v3.35.0's C2PA fixes, which had been verified by hand: no install path, pinned install command and exit 2 when a package is missing, the dev key removed even on failure, the `--verify` exit codes, and the PRIVACY.md disclosures. 585 tests.
 
-### v3.35.0 — live writes need a matching approval record (October 10, 2026)
-
-Answers every point of the Hermes catalog review (NousResearch/hermes-agent#132571). Writes sent by `connector_executor.py` fire only against an approval record bound by sha256 to the exact request, approved after you type `yes`, used once, inside a 15-minute window; batches get one record with an itemised preview, and routine writes can run under a capped, expiring standing approval. MCP-tool writes are outside that check and the docs say so, along with the advice to keep the executor out of your host's allowlist. Autopilot proposes by default. `embed-c2pa.py` no longer installs packages (and now signs on c2pa-python 0.38.0, where it had been failing) and gains `--verify`. `safe_child` and a validating argparse type keep model-supplied names inside the plugin's folders; fetchers check every redirect hop; PRIVACY.md lists the DigiCert timestamp and NLTK downloads. 575 tests.
-
 Older releases are in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
 ## How the SEO skills chain together
+
+![SEO onboarding for a new client: brand-setup, then competitor-analysis picks the competitors, then four baselines in parallel (tech-seo-audit, aeo-audit, backlink-gap, gsc-ai-performance), then keyword-cluster builds pillars and spokes, then seo-plan scores four pillars and the weakest leads Q1](docs/assets/seo-onboarding.svg)
 
 Most SEO work uses 3-5 skills in sequence rather than one mega-skill. The plugin is designed so that each skill produces numbered intermediate files (`01-...md`, `02-...md`, …, `PLAN.md`) under `${CLAUDE_PLUGIN_DATA}/{brand}/seo/{workflow}/{date}/` — downstream skills read those numbered files, not the endpoint, so you can re-run any single step without redoing the whole chain.
 
@@ -514,12 +516,12 @@ Every skill answers to `/digital-marketing-pro:<skill-name>`. Five more are stan
 
 Every other skill works the same way — `:competitor-monitor`, `:churn-risk`, `:autopilot-status`, `:agency-dashboard`, `:aeo-audit`, `:geo-monitor`, `:c2pa-metadata`, `:client-onboarding`, `:journey-design` … see `/digital-marketing-pro:help` after install for the full list, or browse `skills/` in the repo.
 
-### 94 Python scripts (optional)
-Plugin works fully without Python — all marketing knowledge, frameworks, agent capabilities, and skills work out of the box via the 176 reference knowledge files.
+### 95 Python scripts (optional)
+Plugin works fully without Python — all marketing knowledge, frameworks, agent capabilities, and skills work out of the box via the 177 reference knowledge files.
 
 | Mode | Size | Adds |
 |---|---|---|
-| **Knowledge-only** (default) | 0 MB | All 164 skills + 24 agents + 176 reference files |
+| **Knowledge-only** (default) | 0 MB | All 164 skills + 24 agents + 177 reference files |
 | **Lite** (`python scripts/setup.py --install lite`) | ~15 MB | Brand-voice scoring, content quality scoring, readability analysis |
 | **Full** (`python -m pip install -r scripts/requirements.txt`, exact pins) | ~50 MB | Competitor scraping, QR generation, AI visibility API checking, GEO tracking, C2PA signing |
 
@@ -714,7 +716,7 @@ Yes. Each brand has its own `~/.claude-marketing/brands/<brand-slug>/` directory
 Skip to `/digital-marketing-pro:campaign-plan`. Every individual surface (campaign / SEO / content / competitor / email / report) is independently runnable. The full engagement is the canonical path, not the only path.
 
 **Q: Will this work on Codex / Cursor / Copilot CLI / Antigravity?**
-Yes — verified-real native manifests ship for all 9 surfaces (CC, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes Agent, OpenClaw, Grok). See [Supported surfaces](#supported-surfaces-v3352) above for per-platform install commands.
+Yes — verified-real native manifests ship for all 9 surfaces (CC, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes Agent, OpenClaw, Grok). See [Supported surfaces](#supported-surfaces-v3353) above for per-platform install commands.
 
 **Q: I run my team on Anthropic Cowork. Does brand state persist between sessions?**
 Yes — but you need to run `/digital-marketing-pro:cowork-setup` once per team first (v3.12.0). Cowork's per-session filesystem is ephemeral, and `${CLAUDE_PLUGIN_DATA}` is too ([open issue #51398](https://github.com/anthropics/claude-code/issues/51398)). The setup wizard routes brand profiles + plans + reports through a Google Drive MCP so everything survives across sessions and is shared across the team. Multi-team isolation via per-team folder names.
@@ -787,7 +789,7 @@ Use the direct repo form: `grok plugin install indranilbanerjee/digital-marketin
 ### General (any platform)
 
 **"Tests in `tests/` fail when I `git clone` locally"**
-Run `python tests/run_all.py` from the repo root. All 613 tests are stdlib-only — no `pip install` needed. If they fail, the most likely cause is a Python version mismatch (DMP supports Python 3.10+) or a clone that omitted some `skills/` subdirectories. Try `git clone --depth=1` again.
+Run `python tests/run_all.py` from the repo root. All 642 tests are stdlib-only — no `pip install` needed. If they fail, the most likely cause is a Python version mismatch (DMP supports Python 3.10+) or a clone that omitted some `skills/` subdirectories. Try `git clone --depth=1` again.
 
 **"`/digital-marketing-pro:doctor` shows my action as stub_unconfigured"**
 That action needs an MCP connector configured. Run `python scripts/connector-status.py --action setup-guide --name <connector-name>` for the exact setup snippet. Add it to your `.mcp.json` under `mcpServers`, restart your agent, and the action becomes `manifest_ready`. See [Connector-aware action resolver](#connector-aware-action-resolver) for the full readiness model.

@@ -5,6 +5,8 @@ description: "Score ad creative fatigue against baseline, predict days left, bri
 
 # /digital-marketing-pro:creative-health
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`.
+
 ## Purpose
 
 Monitor creative health across all active advertising. Score each creative for fatigue risk, predict when fatigue will impact performance, generate refresh recommendations with specific change suggestions, and create A/B test plans for fatiguing creatives. Creative fatigue is one of the fastest ways to waste ad spend — a high-performing ad that ran too long silently bleeds money as CTR drops, CPM rises, and engagement fades. This command catches fatigue before it costs you, tells you exactly what to change, and gives you a structured test plan to validate the refresh. It covers the full creative lifecycle from launch through maturity to decline, so you always know which creatives are earning their spend and which need attention.

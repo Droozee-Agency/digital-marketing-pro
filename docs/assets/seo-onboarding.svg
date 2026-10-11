@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 360" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>SEO onboarding for a new client, as the skills chain</title>
+  <desc>Brand setup, then competitor analysis picks the competitors, then four baselines run in parallel (technical SEO audit, AEO audit, backlink gap, Search Console AI performance), then keyword clustering builds pillars and spokes, then the SEO plan dispatcher scores four pillars and the weakest one leads the first quarter's roadmap.</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6577"/>
+    </marker>
+  </defs>
+
+  <text x="590" y="28" text-anchor="middle" font-size="17" font-weight="700" fill="#8a94a4">SEO onboarding for a new client — each skill writes files the next one reads</text>
+
+  <g font-size="13" text-anchor="middle">
+    <g>
+      <rect x="20" y="132" width="170" height="80" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="105" y="160" font-weight="700" fill="#1f2733">1  brand-setup</text>
+      <text x="105" y="182" fill="#5a6577" font-size="11.5">voice, audience,</text>
+      <text x="105" y="198" fill="#5a6577" font-size="11.5">compliance markets</text>
+    </g>
+    <g>
+      <rect x="215" y="132" width="180" height="80" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="305" y="160" font-weight="700" fill="#1f2733">2  competitor-analysis</text>
+      <text x="305" y="182" fill="#5a6577" font-size="11.5">picks the competitors</text>
+      <text x="305" y="198" fill="#5a6577" font-size="11.5">every later step uses</text>
+    </g>
+
+    <rect x="425" y="52" width="320" height="252" rx="12" fill="none" stroke="#8a94a4" stroke-dasharray="6 5"/>
+    <text x="585" y="74" font-size="12" font-weight="700" fill="#8a94a4">3  baselines, in parallel</text>
+    <g>
+      <rect x="445" y="86" width="280" height="46" rx="8" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="585" y="106" font-weight="700" fill="#1f2733" font-size="12.5">tech-seo-audit</text>
+      <text x="585" y="123" fill="#5a6577" font-size="11">technical health</text>
+    </g>
+    <g>
+      <rect x="445" y="140" width="280" height="46" rx="8" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="585" y="160" font-weight="700" fill="#1f2733" font-size="12.5">aeo-audit</text>
+      <text x="585" y="177" fill="#5a6577" font-size="11">visibility in six AI answer engines</text>
+    </g>
+    <g>
+      <rect x="445" y="194" width="280" height="46" rx="8" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="585" y="214" font-weight="700" fill="#1f2733" font-size="12.5">backlink-gap</text>
+      <text x="585" y="231" fill="#5a6577" font-size="11">link prospects vs those competitors</text>
+    </g>
+    <g>
+      <rect x="445" y="248" width="280" height="46" rx="8" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="585" y="268" font-weight="700" fill="#1f2733" font-size="12.5">gsc-ai-performance</text>
+      <text x="585" y="285" fill="#5a6577" font-size="11">Search Console AI impressions</text>
+    </g>
+
+    <g>
+      <rect x="775" y="132" width="170" height="80" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="860" y="160" font-weight="700" fill="#1f2733">4  keyword-cluster</text>
+      <text x="860" y="182" fill="#5a6577" font-size="11.5">pillars and spokes</text>
+      <text x="860" y="198" fill="#5a6577" font-size="11.5">from the content gaps</text>
+    </g>
+    <g>
+      <rect x="975" y="122" width="185" height="100" rx="10" fill="#e3eefb" stroke="#9db8dd"/>
+      <text x="1067" y="150" font-weight="700" fill="#1f2733">5  seo-plan</text>
+      <text x="1067" y="172" fill="#5a6577" font-size="11.5">reads everything above,</text>
+      <text x="1067" y="188" fill="#5a6577" font-size="11.5">scores four pillars;</text>
+      <text x="1067" y="204" fill="#5a6577" font-size="11.5">the weakest leads Q1</text>
+    </g>
+  </g>
+
+  <g stroke="#5a6577" stroke-width="1.6" fill="none">
+    <line x1="190" y1="172" x2="209" y2="172" marker-end="url(#arr)"/>
+    <line x1="395" y1="172" x2="419" y2="172" marker-end="url(#arr)"/>
+    <line x1="745" y1="172" x2="769" y2="172" marker-end="url(#arr)"/>
+    <line x1="945" y1="172" x2="969" y2="172" marker-end="url(#arr)"/>
+  </g>
+
+  <text x="590" y="340" text-anchor="middle" font-size="11.5" fill="#8a94a4">Each step writes numbered files and a PLAN.md that must pass its quality scorecard before the next step reads it. Source: skills/seo-plan and the skills it dispatches.</text>
+</svg>
