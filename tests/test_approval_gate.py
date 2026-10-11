@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import socket
 import sys
 import tempfile
 import unittest
@@ -181,10 +182,18 @@ class TestPlantedBypassesSendNothing(GateCase):
 
     def test_network_error_before_send_releases_the_record(self):
         aid = self.prepare_and_approve()
-        self.urlopen.side_effect = ce.urllib.error.URLError("dns failure")
+        # A real DNS failure proves no connection was made (3.35.4: only such errors release).
+        self.urlopen.side_effect = ce.urllib.error.URLError(socket.gaierror(11001, "getaddrinfo failed"))
         res = self.run_exec(approval_id=aid)
         self.assertEqual(res["execution"]["status"], "network_error")
         self.assertEqual(self.record(aid)["status"], "approved", "nothing was sent, so the record is released")
+
+    def test_a_timeout_consumes_the_record(self):
+        aid = self.prepare_and_approve()
+        self.urlopen.side_effect = ce.urllib.error.URLError(socket.timeout("timed out"))
+        res = self.run_exec(approval_id=aid)
+        self.assertEqual(res["execution"]["status"], "unknown_outcome")
+        self.assertNotEqual(self.record(aid)["status"], "approved", "the platform may have acted, so it is used up")
 
     def test_http_error_still_consumes(self):
         aid = self.prepare_and_approve()

@@ -8,6 +8,11 @@ ContentForge and SocialForge, that stays correct on every host (Claude Code,
 Codex, Cursor and the others set the variable; the line is then just a note).
 It lives in skill bodies, not descriptions, so the listing budget is untouched.
 
+2026-10-12 (fresh-install smoke test): the line also names the interpreter. Many macOS and
+Linux systems have no `python` command, only `python3`, so a skill's `python ...` failed
+there with no hint. The line now says to run the scripts with Python 3.10 or newer, as
+`python` or `python3`. The commands themselves keep `python`.
+
 Stdlib only.
 """
 from __future__ import annotations
@@ -18,7 +23,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 VAR = "${CLAUDE_PLUGIN_ROOT}"
 FALLBACK = ("> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in "
-            "this plugin's `scripts/` folder, next to `skills/`.")
+            "this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: "
+            "`python`, or `python3` where `python` is not found (macOS, many Linux systems).")
+# The 3.35.0-3.35.3 line, without the interpreter sentence: a file still carrying it is flagged.
+OLD_FALLBACK = FALLBACK.split(" Run them with")[0]
 
 
 def missing_fallback(text: str) -> bool:
@@ -48,6 +56,9 @@ class TestScriptRootFallback(unittest.TestCase):
 
     def test_plant_line_present_passes(self):
         self.assertFalse(missing_fallback('# X\n\n' + FALLBACK + '\n\nRun `python "${CLAUDE_PLUGIN_ROOT}/scripts/a.py"`.\n'))
+
+    def test_plant_old_line_without_the_interpreter_is_caught(self):
+        self.assertTrue(missing_fallback('# X\n\n' + OLD_FALLBACK + '\n\nRun `python "${CLAUDE_PLUGIN_ROOT}/scripts/a.py"`.\n'))
 
     def test_plant_file_without_the_variable_is_ignored(self):
         self.assertFalse(missing_fallback("# X\n\nNo scripts here.\n"))

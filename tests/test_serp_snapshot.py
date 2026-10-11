@@ -115,6 +115,16 @@ class TestEveryErrorNamesTheRow(unittest.TestCase):
             code, out = run(path)
         self.assertEqual(code, 1)
         self.assertEqual(len(out["errors"]), 3, out["errors"])
+        self.assertIsNone(out["summary"], "a refused snapshot gives no counts")
+        self.assertIs(out["refused"], True)
+
+    def test_a_refused_snapshot_never_counts_its_bad_row(self):
+        result = snap.validate([{"query": "q", "ai_overview_present": False, "ai_overview_cited": True}])
+        self.assertTrue(result["errors"])
+        self.assertIsNone(result["summary"], "the impossible 'cited' row must not be counted")
+        ok = snap.validate([{"query": "q", "ai_overview_present": True, "ai_overview_cited": True}])
+        self.assertEqual(ok["summary"]["ai_overview_cited"], 1)
+        self.assertNotIn("refused", ok)
 
 
 class TestNoNetworkNoKeysNoVendor(unittest.TestCase):
