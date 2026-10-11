@@ -46,16 +46,30 @@ def missing_fallback(text: str) -> bool:
     return runs_a_script(text) and FALLBACK not in text
 
 
-def checked_files():
-    """Discovery, not a list: every skill (and its reference files), command and agent.
+# Folders the model is not sent to for instructions, and contributor docs that are run from a
+# clone (where a relative `scripts/` path is right).
+EXCLUDED_DIRS = {"docs", "tests", "research", "evals", "hermes", "heroes", "node_modules"}
+CONTRIBUTOR_DOCS = re.compile(r"^(README.*|CHANGELOG|CONTRIBUTING|TESTING-GUIDE|TESTING|SUBMISSION|UPGRADE-GUIDE)\.md$",
+                              re.I)
 
-    2026-10-12: the 24 agents ran scripts (execution-coordinator runs approval-manager.py)
-    with no line at all, because the guard only looked at skills and commands; and 29
-    reference files ran benchmark_book.py by a bare `scripts/` path. Recursive (3.35.6), so a
-    supporting file in a deeper folder of a skill cannot sit outside the rules.
+
+def checked_files():
+    """Discovery by exclusion: every .md in the plugin except the folders and contributor docs
+    above, so a new folder is covered by default.
+
+    2026-10-12: the 24 agents ran scripts with no line, because the guard listed skills and
+    commands; 29 reference files ran benchmark_book.py by a bare `scripts/` path; and PRIVACY.md
+    told users to return autopilot to propose-only with `python scripts/campaign-health-monitor.py`,
+    which fails from a user's project. Each time the file sat outside a list of folders.
     """
-    return sorted(list((ROOT / "skills").rglob("*.md")) + list((ROOT / "commands").rglob("*.md"))
-                  + list((ROOT / "agents").rglob("*.md")))
+    out = []
+    for p in ROOT.rglob("*.md"):
+        rel = p.relative_to(ROOT).parts
+        if any(part.startswith(".") for part in rel[:-1]) or rel[0] in EXCLUDED_DIRS \
+                or CONTRIBUTOR_DOCS.match(p.name):
+            continue
+        out.append(p)
+    return sorted(out)
 
 
 class TestScriptRootFallback(unittest.TestCase):
@@ -88,6 +102,14 @@ class TestScriptRootFallback(unittest.TestCase):
         agents = [p for p in users if p.parent.name == "agents"]
         self.assertEqual(len(agents), len(list((ROOT / "agents").glob("*.md"))), "every agent runs scripts")
 
+    def test_scope_is_everything_but_the_exclusions(self):
+        names = {p.relative_to(ROOT).as_posix() for p in checked_files()}
+        for must in ("PRIVACY.md", "AGENTS.md", "CONNECTORS.md", "SECURITY.md", "skills/help/SKILL.md",
+                     "agents/execution-coordinator.md", "commands/execute-action.md"):
+            self.assertIn(must, names)
+        for never in ("README.md", "CHANGELOG.md", "CONTRIBUTING.md", "TESTING-GUIDE.md", "SUBMISSION.md",
+                      "docs/getting-started.md", "evals/README.md"):
+            self.assertNotIn(never, names)
     # ── plant checks ─────────────────────────────────────────────
 
     def test_plant_missing_line_is_caught(self):

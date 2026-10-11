@@ -159,6 +159,53 @@ class TestPrintedHintsRunFromAnyFolder(unittest.TestCase):
     def test_no_script_prints_a_relative_run_hint(self):
         self.assertEqual(self.runtime_hints(), [])
 
+    COMMAND_CALLS = ("script_command", "install_command")
+
+    def trailing_text(self, tree):
+        """Lines where a printed command is followed by more text in the same string expression.
+
+        With a spaced interpreter the command ends in `  # in PowerShell, put & before it`, so
+        anything appended after it (arguments, prose) lands inside that comment. A newline ends
+        the comment, so text after one is fine. Found in a sibling plugin, 2026-10-12."""
+        def is_cmd(n):
+            return isinstance(n, ast.Call) and getattr(n.func, "attr", getattr(n.func, "id", "")) in self.COMMAND_CALLS
+
+        def starts_line(n):
+            return isinstance(n, ast.Constant) and str(n.value).startswith("\n")
+        out = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.JoinedStr):
+                vals = node.values
+                out += [node.lineno for i, v in enumerate(vals) if isinstance(v, ast.FormattedValue)
+                        and is_cmd(v.value) and i + 1 < len(vals) and not starts_line(vals[i + 1])]
+            elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+                items = []
+
+                def flat(n):
+                    if isinstance(n, ast.BinOp) and isinstance(n.op, ast.Add):
+                        flat(n.left)
+                        flat(n.right)
+                    else:
+                        items.append(n)
+                flat(node)
+                out += [node.lineno for i, it in enumerate(items)
+                        if is_cmd(it) and i + 1 < len(items) and not starts_line(items[i + 1])]
+        return sorted(set(out))
+
+    def test_nothing_follows_a_printed_command(self):
+        bad = []
+        for p in sorted(SCRIPTS_DIR.glob("*.py")):
+            bad += [f"{p.name}:{ln}" for ln in self.trailing_text(ast.parse(p.read_text(encoding="utf-8-sig")))]
+        self.assertEqual(bad, [], "put prose before the command, and pass arguments to script_command():\n  "
+                         + "\n  ".join(bad))
+
+    def test_plant_text_after_a_command_is_flagged(self):
+        tree = ast.parse('a = "run: " + _common.script_command("x.py") + " --force"\n'
+                         'b = f"run `{_common.script_command(\'x.py\')}` to check"\n'
+                         'c = "run: " + _common.script_command("x.py", "--force")\n'
+                         'd = f"    {_common.install_command([p])}\\nDocs: here"\n')
+        self.assertEqual(self.trailing_text(tree), [1, 2], "args appended outside the call are flagged; a newline is fine")
+
     def test_script_command_is_absolute_and_quoted(self):
         cmd = _common.script_command("refresh_models.py", "--check")
         path = cmd.split('"')[-2] if cmd.count('"') >= 2 else ""

@@ -253,6 +253,57 @@ def unstopped_error_prints(tree):
     return out
 
 
+class TestNoScriptWaitsForInput(unittest.TestCase):
+    """Claude Code's Bash tool gives a script an open stdin pipe that never ends, and on Windows a
+    stdin redirected from NUL reports isatty() as True, so input(), getpass() or a bare
+    sys.stdin.read() blocks forever (a sibling plugin's credential setup hung this way,
+    2026-10-12). No DMP script reads stdin or prompts today; if one ever must, it reads stdin
+    only behind an explicit flag and prompts only behind a flag and a real console."""
+
+    @staticmethod
+    def waits(tree):
+        out = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                name = getattr(node.func, "attr", getattr(node.func, "id", ""))
+                if name in ("input", "getpass", "raw_input", "FileType"):
+                    out.append(node.lineno)
+                if name == "open" and node.args and isinstance(node.args[0], ast.Constant) and node.args[0].value == 0:
+                    out.append(node.lineno)
+            if isinstance(node, ast.Attribute) and node.attr in ("stdin", "__stdin__") \
+                    and getattr(node.value, "id", "") == "sys":
+                out.append(node.lineno)
+        return sorted(set(out))
+
+    def test_no_script_reads_stdin_or_prompts(self):
+        bad = []
+        for p in sorted(SCRIPTS_DIR.glob("*.py")):
+            bad += [f"{p.name}:{ln}" for ln in self.waits(ast.parse(p.read_text(encoding="utf-8-sig")))]
+        self.assertEqual(bad, [], "\n  ".join(bad))
+
+    def test_plant(self):
+        tree = ast.parse("key = input('API key: ')\nimport getpass\ns = getpass.getpass()\n"
+                         "data = sys.stdin.read()\nf = open(0)\n")
+        self.assertEqual(self.waits(tree), [1, 3, 4, 5])
+
+    def test_scripts_exit_with_an_open_stdin_pipe(self):
+        """The Bash tool's situation, reproduced: stdin is a pipe nobody writes to or closes."""
+        for script, args in (("tech-seo-auditor.py", []), ("local-seo-checker.py", []),
+                             ("utm-generator.py", []), ("connector-status.py", ["--action", "check"])):
+            with self.subTest(script=script):
+                proc = subprocess.Popen([sys.executable, str(SCRIPTS_DIR / script), *args], stdin=subprocess.PIPE,
+                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                try:
+                    code = proc.wait(timeout=30)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    self.fail(f"{script} waited for input on an open stdin pipe")
+                finally:
+                    for stream in (proc.stdin, proc.stdout, proc.stderr):
+                        stream.close()
+                self.assertNotEqual(code, 0, "missing arguments are an error")
+
+
 class TestNoErrorFallsThroughToExitZero(unittest.TestCase):
     """Light check: in every script's main(), a printed error dict is followed by a non-zero exit."""
 
